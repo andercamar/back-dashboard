@@ -26,7 +26,7 @@ class RegisterController extends BaseController
         $user = User::create($input);
         $success['token'] = $user->createToken('DashApp', ['is_viewer'])->plainTextToken;
         $success['name'] = $user->name;
-        return $this->sendResponse($success, 'User register successfully');
+        return $this->sendResponse($success, 'User register successfully', 200);
     }
     public function login(Request $request){
         if(Auth::attempt(['email' => $request->email, 'password' =>  $request->password])){
@@ -37,9 +37,9 @@ class RegisterController extends BaseController
                 $success['token']   = $user->createToken('DashApp', ['is_viewer'])->plainTextToken;
             }
             $success['name']    = $user->name;
-            return $this->sendResponse($success, 'User Login Successfully.');
+            return $this->sendResponse($success, 'User Login Successfully.', 200);
         }else{
-            return $this->sendError('Unauthorised.',['error'=>'Unauthorised']);
+            return $this->sendError('unauthorized.',['error'=>'unauthorized']);
         }
     }
 }

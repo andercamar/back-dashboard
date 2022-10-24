@@ -3,32 +3,60 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 
-class DepartmentController extends Controller
+class DepartmentController extends BaseController
 {
     public function index(Authenticatable $user){
-        dd($user->tokenCan('is_admin'));
-        return Department::paginate(perPage: 10);
+        if ($user->tokenCan('is_admin')){
+            $data = Department::paginate(perPage: 10);
+            return $this->sendResponse($data, 'Get data successfully', 200);
+        }
+        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }
 
-    public function store(DepartmentRequest $request){
-        return response()
-            ->json(Department::create($request->all()), 201);
+    public function store(DepartmentRequest $request, Authenticatable $user){
+        if ($user->tokenCan('is_admin')){
+            $data = Department::create($request->all());
+            return $this->sendResponse($data, 'Create Successfully', 201);
+        }
+        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }
 
-    public function show(Department $department){
-        return $department;
+    public function show(int $department, Authenticatable $user){
+        if ($user->tokenCan('is_admin')){
+            $data = Department::find($department);
+            if ($data == null){
+                return $this->sendError('Not Found.',['error'=>'Department not found']);
+            }
+            return $this->sendResponse($department,'Get data Successfully', 200);
+        }
+        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }
-    public function update(Department $department, DepartmentRequest $request){
-        $department->update($request->all());
-        return $department->fresh();
+    public function update(int $department, DepartmentRequest $request, Authenticatable $user){
+        if ($user->tokenCan('is_admin')){
+            $data = Department::find($department);
+            if ($data == null){
+                return $this->sendError('Not Found.',['error'=>'Department not found']);
+            }
+            $data->update($request->all());
+            return $this->sendResponse($data->fresh(),'Get data Successfully', 200);
+        }
+        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }
-    public function destroy(Department $department){
-        $department->delete();
-        return response()->noContent();
+    public function destroy(int $department, Authenticatable $user){
+        if($user->tokenCan('is_admin')){
+            $data = Department::find($department);
+            if ($data == null){
+                return $this->sendError('Not Found.',['error'=>'Department not found']);
+            }
+            $data->delete();
+            return $this->sendResponse(response()->noContent(),'Delete Successfully', 200);
+        }
+        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }
 }

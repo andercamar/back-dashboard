@@ -12,4 +12,10 @@ class Department extends Model
     protected $fillable =[
         'name'
     ];
+    public function users(){
+        return $this->belongsToMany(Users::class, 'department_user');
+    }
+    public function dashboards(){
+        return $this->belongsToMany(Users::class, 'department_dashboard');
+    }
 }

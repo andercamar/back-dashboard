@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::controller(\App\Http\Controllers\Api\RegisterController::class)->group(function(){
     Route::post('register', 'register');
     Route::post('login', 'login');
@@ -22,6 +21,7 @@ Route::controller(\App\Http\Controllers\Api\RegisterController::class)->group(fu
 Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource(name:'/dashboards', controller:\App\Http\Controllers\Api\DashboardController::class);
     Route::apiResource(name:'/departments', controller:\App\Http\Controllers\Api\DepartmentController::class);
+    Route::apiResource(name:'/users', controller:\App\Http\Controllers\Api\UserController::class);
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -19,4 +19,7 @@ class Dashboard extends Model
     protected $casts = [
         'permission' => 'boolean'
     ];
+    public function departments(){
+        return $this->belongsToMany(Department::class, 'department_dashboard');
+    }
 }
