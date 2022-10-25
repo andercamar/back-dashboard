@@ -22,4 +22,7 @@ class Dashboard extends Model
     public function departments(){
         return $this->belongsToMany(Department::class, 'department_dashboard');
     }
+    public function getIddepartments(){
+        return $this->departments->pluck('department_id');
+    }
 }

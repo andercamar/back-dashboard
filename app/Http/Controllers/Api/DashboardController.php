@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\DashboardRequest;
 use App\Models\Dashboard;
 use App\Models\Department;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,15 +17,17 @@ class DashboardController extends BaseController
 {
     public function index(Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Dashboard::paginate(perPage: 10);
-            return $this->sendResponse($data, 'Return Successfully', 200);
+            $data = Dashboard::with("departments")->paginate(perPage: 10);
+            return $this->sendResponse($data, 'Return Successfully 1', 200);
         }
-        $data = DB::table('dashboards')
-            // ->leftJoin('department_dashboard', 'dashboards.id', '=', 'department_dashboard.dashboard_id')
-                ->wherePermission(true)
-                    ->paginate(10);
+        $ids = User::find($user->id)->departments()->allRelatedIds();;
+        $data = Dashboard::select('dashboards.*')
+            ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
+                ->whereIn('department_dashboard.department_id', $ids)
+                    ->orWhere('dashboards.permission','=',true)
+                        ->distinct()
+                            ->paginate(10);
         return $this->sendResponse($data, 'Return Successfully', 200);
-        return Dashboard::wherePermission(true)->paginate(perPage: 1);
     }
 
     public function store(DashboardRequest $request, Authenticatable $user){

@@ -99,4 +99,15 @@ class UserController extends BaseController
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }
+    public function departments($id,Request $request, Authenticatable $user){
+        if($user->tokenCan('is_admin')){
+            $data = User::find($id);
+            if ($data == null){
+                return $this->sendError('Not Found.',['error'=>'User not found']);
+            }
+            $data->departments()->sync($request->input('departments'));
+            return $this->sendResponse($data->departments()->allRelatedIds()->toArray(),'Update Successfully', 200);
+        }
+        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
+    }
 }
