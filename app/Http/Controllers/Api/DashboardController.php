@@ -17,7 +17,7 @@ class DashboardController extends BaseController
 {
     public function index(Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Dashboard::with("departments")->paginate(perPage: 10);
+            $data = Dashboard::with("departments")->paginate(9);
             return $this->sendResponse($data, 'Return Successfully 1', 200);
         }
         $ids = User::find($user->id)->departments()->allRelatedIds();;
@@ -26,7 +26,7 @@ class DashboardController extends BaseController
                 ->whereIn('department_dashboard.department_id', $ids)
                     ->orWhere('dashboards.permission','=',true)
                         ->distinct()
-                            ->paginate(10);
+                            ->paginate(9);
         return $this->sendResponse($data, 'Return Successfully', 200);
     }
 
