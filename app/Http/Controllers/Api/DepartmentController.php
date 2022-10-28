@@ -13,7 +13,7 @@ class DepartmentController extends BaseController
 {
     public function index(Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Department::paginate(9);
+            $data = Department::get();
             return $this->sendResponse($data, 'Get data successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
