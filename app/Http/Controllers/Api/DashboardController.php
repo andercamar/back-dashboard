@@ -20,8 +20,8 @@ class DashboardController extends BaseController
             $data = Dashboard::with("departments")->get();
             return $this->sendResponse($data, 'Return Successfully 1', 200);
         }
-        $ids = User::find($user->id)->departments()->allRelatedIds();;
-        $data = Dashboard::select('dashboards.*')
+        $ids = User::find($user->id)->departments()->allRelatedIds();
+        $data = Dashboard::select('dashboards.id,dashboards.name,dashboards.description,dashboards.image,')
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
                 ->whereIn('department_dashboard.department_id', $ids)
                     ->orWhere('dashboards.permission','=',true)
@@ -47,7 +47,18 @@ class DashboardController extends BaseController
             }
             return $this->sendResponse($data,'Get data Successfully', 200);
         }
-        return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
+        $ids = User::find($user->id)->departments()->allRelatedIds();
+        $data = Dashboard::select('dashboards.id,dashboards.name,dashboards.description,dashboards.image,dashboards.url')
+            ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
+                ->whereIn('department_dashboard.department_id', $ids)
+                    ->orWhere('dashboards.permission','=',true)
+                    ->where('dashboards.id', '=', $dashboard)
+                        ->distinct()
+                            ->get();
+        if($data == null){
+            return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
+        }
+        return $this->sendResponse($data, 'Return Successfully', 200);
     }
     public function update(int $dashboard, DashboardRequest $request,Authenticatable $user){
         if ($user->tokenCan('is_admin')){
