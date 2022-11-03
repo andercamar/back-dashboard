@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\DepartmentRequest;
+use App\Http\Resources\DepartmentResource;
 use App\Models\Department;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
@@ -13,7 +14,8 @@ class DepartmentController extends BaseController
 {
     public function index(Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Department::get();
+            $departments = Department::get();
+            $data = DepartmentResource::collection($departments);
             return $this->sendResponse($data, 'Get data successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
@@ -29,11 +31,12 @@ class DepartmentController extends BaseController
 
     public function show(int $department, Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Department::find($department);
-            if ($data == null){
+            $query = Department::find($department);
+            if ($query == null){
                 return $this->sendError('Not Found.',['error'=>'Department not found']);
             }
-            return $this->sendResponse($department,'Get data Successfully', 200);
+            $data = DepartmentResource::collection($query);
+            return $this->sendResponse($data,'Get data Successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
     }

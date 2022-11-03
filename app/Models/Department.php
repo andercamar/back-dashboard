@@ -13,9 +13,9 @@ class Department extends Model
         'name'
     ];
     public function users(){
-        return $this->belongsToMany(Users::class, 'department_user');
+        return $this->belongsToMany(User::class, 'department_user');
     }
     public function dashboards(){
-        return $this->belongsToMany(Users::class, 'department_dashboard');
+        return $this->belongsToMany(Dashboard::class, 'department_dashboard');
     }
 }

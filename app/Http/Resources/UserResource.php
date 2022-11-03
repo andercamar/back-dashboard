@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DashboardResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +17,10 @@ class DashboardResource extends JsonResource
         return [
             'id'            => $this->id,
             'name'          => $this->name,
-            'description'   => $this->description,
-            'url'           => $this->url,
-            'image'         => $this->image,
-            'permission'    => $this->permission,
+            'email'         => $this->email,
             'created_at'    => $this->created_at?->format('d/m/Y') ?? '',
             'updated_at'    => $this->updated_at?->format('d/m/Y') ?? '',
+            'is_admin'      => $this->is_admin,
             'departments'   => DepartmentResource::collection($this->whenLoaded('departments')),
         ];
     }

@@ -12,21 +12,24 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\DashboardResource;
 
 class DashboardController extends BaseController
 {
     public function index(Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Dashboard::with("departments")->get();
+            $dashboards = Dashboard::with("departments");
+            $data = DashboardResource::collection($dashboards->get());
             return $this->sendResponse($data, 'Return Successfully 1', 200);
         }
         $ids = User::find($user->id)->departments()->allRelatedIds();
-        $data = Dashboard::select('dashboards.id,dashboards.name,dashboards.description,dashboards.image,')
+        $dashboards = Dashboard::select("dashboards.id","dashboards.name","dashboards.description","dashboards.image")
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
                 ->whereIn('department_dashboard.department_id', $ids)
                     ->orWhere('dashboards.permission','=',true)
                         ->distinct()
                             ->get();
+        $data = DashboardResource::collection($dashboards);
         return $this->sendResponse($data, 'Return Successfully', 200);
     }
 
@@ -41,23 +44,25 @@ class DashboardController extends BaseController
 
     public function show(int $dashboard,Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Dashboard::find($dashboard);
-            if ($data == null){
+            $query = Dashboard::find($dashboard);
+            if ($query == null){
                 return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
             }
+            $data = DashboardResource::collection($query->get());
             return $this->sendResponse($data,'Get data Successfully', 200);
         }
         $ids = User::find($user->id)->departments()->allRelatedIds();
-        $data = Dashboard::select('dashboards.id,dashboards.name,dashboards.description,dashboards.image,dashboards.url')
+        $dashboard = Dashboard::select('dashboards.id','dashboards.name','dashboards.description','dashboards.image','dashboards.url')
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
                 ->whereIn('department_dashboard.department_id', $ids)
                     ->orWhere('dashboards.permission','=',true)
                     ->where('dashboards.id', '=', $dashboard)
                         ->distinct()
                             ->get();
-        if($data == null){
+        if($dashboard == null){
             return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
         }
+        $data = DashboardResource::collection($dashboard);
         return $this->sendResponse($data, 'Return Successfully', 200);
     }
     public function update(int $dashboard, DashboardRequest $request,Authenticatable $user){
