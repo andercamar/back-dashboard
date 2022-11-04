@@ -39,6 +39,7 @@ class UserController extends BaseController
             $input = $request->all();
             $input['password'] = bcrypt($input['password']);
             $data = User::create($input);
+            $data->departments()->attach($request->input('departments'));
             return $this->sendResponse($data, 'Get data successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
@@ -80,7 +81,10 @@ class UserController extends BaseController
             if($data == null){
                 return $this->sendError('Not Found.',['error'=>'User not found']);
             }
-            $data->update($request->all());
+            $input = $request->all();
+            $input['password'] = bcrypt($input['password']);
+            $data->update($input);
+            $data->departments()->sync($request->input('departments'));
             return $this->sendResponse($data->fresh(), 'Update Successgully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);

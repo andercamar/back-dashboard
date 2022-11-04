@@ -44,25 +44,23 @@ class DashboardController extends BaseController
 
     public function show(int $dashboard,Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $query = Dashboard::find($dashboard);
-            if ($query == null){
+            $data = Dashboard::find($dashboard);
+            if ($data == null){
                 return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
             }
-            $data = DashboardResource::collection($query->get());
             return $this->sendResponse($data,'Get data Successfully', 200);
         }
         $ids = User::find($user->id)->departments()->allRelatedIds();
-        $dashboard = Dashboard::select('dashboards.id','dashboards.name','dashboards.description','dashboards.image','dashboards.url')
+        $data = Dashboard::select('dashboards.id','dashboards.name','dashboards.description','dashboards.image','dashboards.url')
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
                 ->whereIn('department_dashboard.department_id', $ids)
                     ->orWhere('dashboards.permission','=',true)
                     ->where('dashboards.id', '=', $dashboard)
                         ->distinct()
                             ->get();
-        if($dashboard == null){
+        if($data == null){
             return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
         }
-        $data = DashboardResource::collection($dashboard);
         return $this->sendResponse($data, 'Return Successfully', 200);
     }
     public function update(int $dashboard, DashboardRequest $request,Authenticatable $user){
