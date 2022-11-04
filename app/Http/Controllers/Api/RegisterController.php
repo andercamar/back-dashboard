@@ -36,7 +36,8 @@ class RegisterController extends BaseController
             }else{
                 $success['token']   = $user->createToken('DashApp', ['is_viewer'])->plainTextToken;
             }
-            $success['name']    = $user->name;
+            $success['name']        = $user->name;
+            $success['is_admin']    = $user->is_admin;
             return $this->sendResponse($success, 'User Login Successfully.', 200);
         }else{
             return $this->sendError('Unauthorized.',['error'=>'Wrong credentials or missing access rights to application']);
