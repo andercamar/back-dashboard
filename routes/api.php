@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource(name:'/dashboards', controller:\App\Http\Controllers\Api\DashboardController::class);
     Route::apiResource(name:'/departments', controller:\App\Http\Controllers\Api\DepartmentController::class);
     Route::apiResource(name:'/users', controller:\App\Http\Controllers\Api\UserController::class);
+    Route::post('/user/password', '\App\Http\Controllers\Api\UserController@newPassword');
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

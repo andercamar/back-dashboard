@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Validator;
 
 class UserController extends BaseController
 {
@@ -109,5 +110,20 @@ class UserController extends BaseController
             return $this->sendResponse(response()->noContent(),'Delete Successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
+    }
+
+    public function newPassword(Authenticatable $user, Request $request){
+        $validator = Validator::make($request->all(), [
+            'password'  => 'required',
+            'conf_password'=> 'required|same:password',
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        $data = User::find($user->id);
+        $input = $request->all();
+        $input['password'] = bcrypt($input['password']);
+        $data->update($input);
+        return $this->sendResponse($data, 'User register successfully', 200);
     }
 }
