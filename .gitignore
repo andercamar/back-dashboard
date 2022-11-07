@@ -15,3 +15,6 @@ yarn-error.log
 /.idea
 /.vscode
 index.php
+Dockerfile
+/docker-compose
+docker-compose.yml
