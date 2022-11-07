@@ -82,7 +82,9 @@ class UserController extends BaseController
                 return $this->sendError('Not Found.',['error'=>'User not found']);
             }
             $input = $request->all();
-            $input['password'] = bcrypt($input['password']);
+            if ($request->input('password')){
+                $input['password'] = bcrypt($input['password']);
+            }
             $data->update($input);
             $data->departments()->sync($request->input('departments'));
             return $this->sendResponse($data->fresh(), 'Update Successgully', 200);
