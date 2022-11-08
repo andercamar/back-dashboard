@@ -35,8 +35,17 @@ class DashboardController extends BaseController
 
     public function store(DashboardRequest $request, Authenticatable $user){
         if ($user->tokenCan('is_admin')){
-            $data = Dashboard::create($request->all());
+            $input = $request->except(['image']);
+            $data = Dashboard::create($input);
             $data->departments()->attach($request->input('departments'));
+            if($request->hasFile('image')){
+                $image = $request->file('image');
+                $extension = $image->getClientOriginalExtension();
+                $name = "{$data->id}-{$data->name}.{$extension}";
+                $image->storeAs('public/image',$name);
+                $data->image = $name;
+                $data->save();
+            }
             return $this->sendResponse($data, 'Create Successfully', 201);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
@@ -69,8 +78,16 @@ class DashboardController extends BaseController
             if ($data == null){
                 return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
             }
-            $data->update($request->all());
+            $data->update($request->except(['image']));
             $data->departments()->sync($request->input('departments'));
+            if($request->hasFile('image')){
+                $image = $request->file('image');
+                $extension = $image->getClientOriginalExtension();
+                $name = "{$data->id}-{$data->name}.{$extension}";
+                $image->storeAs('public/image',$name);
+                $data->image = $name;
+                $data->save();
+            }
             return $this->sendResponse($data->fresh(),'Updated Successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
