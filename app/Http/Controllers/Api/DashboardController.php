@@ -78,8 +78,7 @@ class DashboardController extends BaseController
             if ($data == null){
                 return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
             }
-            $data->update($request->except(['image']));
-            $data->departments()->sync($request->input('departments'));
+            $data->update($request->except(['image','departments']));
             if($request->hasFile('image')){
                 $image = $request->file('image');
                 $extension = $image->getClientOriginalExtension();
@@ -88,6 +87,7 @@ class DashboardController extends BaseController
                 $data->image = $name;
                 $data->save();
             }
+            $data->departments()->sync($request->input('departments'));
             return $this->sendResponse($data->fresh(),'Updated Successfully', 200);
         }
         return $this->sendError('Unauthorized.',['error'=>'Unauthorized']);
