@@ -42,7 +42,7 @@ class DashboardController extends BaseController
                 $image = $request->file('image');
                 $extension = $image->getClientOriginalExtension();
                 $name = "{$data->id}-{$data->name}.{$extension}";
-                $image->storeAs('public/image',$name);
+                $image->move(public_path('image'),$name);
                 $data->image = $name;
                 $data->save();
             }
@@ -83,7 +83,7 @@ class DashboardController extends BaseController
                 $image = $request->file('image');
                 $extension = $image->getClientOriginalExtension();
                 $name = "{$data->id}-{$data->name}.{$extension}";
-                $image->storeAs('public/image',$name);
+                $image->move(public_path('image'),$name);
                 $data->image = $name;
                 $data->save();
             }
