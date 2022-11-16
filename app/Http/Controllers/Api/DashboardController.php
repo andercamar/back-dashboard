@@ -62,11 +62,13 @@ class DashboardController extends BaseController
         $ids = User::find($user->id)->departments()->allRelatedIds();
         $data = Dashboard::select('dashboards.id','dashboards.name','dashboards.description','dashboards.image','dashboards.url')
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
-                ->whereIn('department_dashboard.department_id', $ids)
-                    ->orWhere('dashboards.permission','=',true)
-                    ->where('dashboards.id', '=', $dashboard)
-                        ->distinct()
-                            ->get();
+                ->where(function ($query) use ($dashboard){
+                    $query->where('dashboards.id','=',$dashboard);
+                })
+                ->where(function ($query) use ($ids){
+                    $query->whereIn('department_dashboard.department_id',$ids);
+                    $query->orWhere('dashboards.permission','=',true);
+                })->get();
         if($data == null){
             return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
         }
