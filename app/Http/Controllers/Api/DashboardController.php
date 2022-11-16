@@ -72,7 +72,7 @@ class DashboardController extends BaseController
         if($data == null){
             return $this->sendError('Not Found.',['error'=>'Dashboard not found']);
         }
-        return $this->sendResponse($data, 'Return Successfully', 200);
+        return $this->sendResponse($data[0], 'Return Successfully', 200);
     }
     public function update(int $dashboard, DashboardRequest $request,Authenticatable $user){
         if ($user->tokenCan('is_admin')){
