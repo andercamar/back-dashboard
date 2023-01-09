@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class RegisterController extends BaseController
 {
@@ -41,6 +42,12 @@ class RegisterController extends BaseController
             return $this->sendResponse($success, 'User Login Successfully.', 200);
         }else{
             return $this->sendError('Unauthorized.',['error'=>'Wrong credentials or missing access rights to application']);
+        }
+    }
+    public function logout(Authenticatable $user){
+        if($user){
+            $user->currentAccessToken()->delete();
+            return $this->sendResponse($user,'Sucesso',200);
         }
     }
 }
