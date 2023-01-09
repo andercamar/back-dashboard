@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(\App\Http\Controllers\Api\RegisterController::class)->group(function(){
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::post('logout', 'logout');
 });
 
 Route::middleware('auth:sanctum')->group(function(){
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource(name:'/departments', controller:\App\Http\Controllers\Api\DepartmentController::class);
     Route::apiResource(name:'/users', controller:\App\Http\Controllers\Api\UserController::class);
     Route::post('/user/password', '\App\Http\Controllers\Api\UserController@newPassword');
+    Route::post('/logout', '\App\Http\Controllers\Api\RegisterController@logout');
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
