@@ -15,6 +15,8 @@ class Dashboard extends Model
         'description',
         'image',
         'permission',
+        'creator',
+        'status',
     ];
     protected $casts = [
         'permission' => 'boolean'
