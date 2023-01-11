@@ -23,7 +23,7 @@ class DashboardController extends BaseController
             return $this->sendResponse($data, 'Return Successfully 1', 200);
         }
         $ids = User::find($user->id)->departments()->allRelatedIds();
-        $dashboards = Dashboard::select("dashboards.id","dashboards.name","dashboards.description","dashboards.image")
+        $dashboards = Dashboard::select("dashboards.id","dashboards.name","dashboards.description","dashboards.image","dashboards.creator","dashboards.status")
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
                 ->whereIn('department_dashboard.department_id', $ids)
                     ->orWhere('dashboards.permission','=',true)
@@ -60,7 +60,7 @@ class DashboardController extends BaseController
             return $this->sendResponse($data,'Get data Successfully', 200);
         }
         $ids = User::find($user->id)->departments()->allRelatedIds();
-        $data = Dashboard::select('dashboards.id','dashboards.name','dashboards.description','dashboards.image','dashboards.url')
+        $data = Dashboard::select('dashboards.id','dashboards.name','dashboards.description','dashboards.image','dashboards.url','dashboards.creator','dashboards.status')
             ->leftJoin('department_dashboard','dashboard_id','dashboards.id')
                 ->where(function ($query) use ($dashboard){
                     $query->where('dashboards.id','=',$dashboard);

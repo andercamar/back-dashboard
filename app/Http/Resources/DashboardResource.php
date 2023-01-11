@@ -24,6 +24,8 @@ class DashboardResource extends JsonResource
             'created_at'    => $this->created_at?->format('d/m/Y') ?? '',
             'updated_at'    => $this->updated_at?->format('d/m/Y') ?? '',
             'departments'   => DepartmentResource::collection($this->whenLoaded('departments')),
+            'creator'       => $this->creator,
+            'status'        => $this->status,
         ];
     }
 }
